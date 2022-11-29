@@ -10,7 +10,7 @@ An interactive shell with the database containing the schema and the required tr
 
 ## 📄 - SQL Files
 
-Files (.sql) for every task are contained under /sql. These files are all executed automatically on `docker compose up -d`.
+Files (.sql) for every task are contained under `sql/`. These files are all executed automatically on `docker compose up -d`.
 
 ## 📦 - Sample Data
 
