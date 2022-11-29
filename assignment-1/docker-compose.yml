@@ -14,3 +14,4 @@ services:
       - ./sql/task_2.sql:/docker-entrypoint-initdb.d/task_2.sql
       - ./sql/task_3.sql:/docker-entrypoint-initdb.d/task_3.sql
       - ./sql/task_4.sql:/docker-entrypoint-initdb.d/task_4.sql
+      - ./sql/task_fill.sql:/docker-entrypoint-initdb.d/task_fill.sql
