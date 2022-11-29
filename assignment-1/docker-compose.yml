@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    stdin_open: true
+    tty: true
+    volumes: 
+      - ./sql/task_1.sql:/docker-entrypoint-initdb.d/task_1.sql
+      - ./sql/task_2.sql:/docker-entrypoint-initdb.d/task_2.sql
+      - ./sql/task_3.sql:/docker-entrypoint-initdb.d/task_3.sql
+      - ./sql/task_4.sql:/docker-entrypoint-initdb.d/task_4.sql
