@@ -69,12 +69,14 @@ contract ShareholderVoting {
         }
     }
 
-    function getQuestions() public view {
+    function getQuestions() public view onlyShareholder {
         for (uint i = 0; i < questionCount; i++) {
-            string memory state = questions[i].closed ? "Closed" : "Open";
-            string memory result = questions[i].votesFor > questions[i].votesAgainst ? ": Approved" : ": Declined";
-            string memory output = string.concat(questions[i].text, " (", state, ")", questions[i].closed ? result : "");
-            console.log(output);
+            console.log(string.concat(
+                questions[i].text, 
+                questions[i].closed ? " (Closed)" : " (Open)",
+                questions[i].votesFor > questions[i].votesAgainst ? ": Approved" : ": Declined",
+                "For: ", questions[i].votesFor, " | Against: ", questions[i].votesAgainst
+            ));
         }
     }
 }
