@@ -6,7 +6,7 @@ contract ShareholderVoting {
     address private director;
 
     mapping(address => bool) private shareholders;
-    mapping(uint => address[]) private voters;
+    mapping(uint => mapping(address => bool)) private voters;
 
     struct Question {
         string text;
@@ -16,8 +16,18 @@ contract ShareholderVoting {
     }
     Question[] private questions;
 
+    enum Vote {
+        FOR,
+        AGAINST
+    }
+
     modifier onlyDirector() {
         require(msg.sender == director);
+        _;
+    }
+
+    modifier onlyShareholder() {
+        require(shareholders[msg.sender]);
         _;
     }
 
@@ -41,5 +51,22 @@ contract ShareholderVoting {
 
     function closeQuestion(uint id) public onlyDirector {
         questions[id].closed = true;
+    }
+
+    function voteForQuestion(uint id, Vote vote) public onlyShareholder {
+        require(!questions[id].closed);
+        require(!voters[id][msg.sender]);
+
+        voters[id][msg.sender] = true;
+
+        if (vote == Vote.FOR) {
+            questions[id].votesFor++;
+        } else {
+            questions[id].votesAgainst++;
+        }
+    }
+
+    function getQuestions() public view returns (Question[] memory) {
+        return questions;
     }
 }
