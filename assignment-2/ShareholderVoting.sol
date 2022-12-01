@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity >=0.8.12 <0.9.0;
+
+import "hardhat/console.sol";
 
 contract ShareholderVoting {
     address private director;
@@ -14,7 +16,8 @@ contract ShareholderVoting {
         uint votesAgainst;
         bool closed;
     }
-    Question[] private questions;
+    uint private questionCount = 0;
+    mapping(uint => Question) private questions;
 
     enum Vote {
         FOR,
@@ -44,9 +47,9 @@ contract ShareholderVoting {
     }
 
     function addQuestion(string calldata text) public onlyDirector returns (uint id) {
-        questions.push(Question(text, 0, 0, false));
-        uint questionID = questions.length - 1;
-        return questionID;
+        questions[questionCount] = Question(text, 0, 0, false);
+        questionCount++;
+        return questionCount - 1;
     }
 
     function closeQuestion(uint id) public onlyDirector {
@@ -66,7 +69,12 @@ contract ShareholderVoting {
         }
     }
 
-    function getQuestions() public view returns (Question[] memory) {
-        return questions;
+    function getQuestions() public view {
+        for (uint i = 0; i < questionCount; i++) {
+            string memory state = questions[i].closed ? "Closed" : "Open";
+            string memory result = questions[i].votesFor > questions[i].votesAgainst ? ": Approved" : ": Declined";
+            string memory output = string.concat(questions[i].text, " (", state, ")", questions[i].closed ? result : "");
+            console.log(output);
+        }
     }
 }
