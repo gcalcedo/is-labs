@@ -3,6 +3,7 @@
 pragma solidity >=0.8.12 <0.9.0;
 
 import "hardhat/console.sol";
+import "IntToString.sol";
 
 contract ShareholderVoting {
     address private director;
@@ -75,7 +76,8 @@ contract ShareholderVoting {
                 questions[i].text, 
                 questions[i].closed ? " (Closed)" : " (Open)",
                 questions[i].votesFor > questions[i].votesAgainst ? ": Approved" : ": Declined",
-                "For: ", questions[i].votesFor, " | Against: ", questions[i].votesAgainst
+                string(abi.encodePacked("For: ", IntToString.toString(questions[i].votesFor), 
+                " | Against: ", IntToString.toString(questions[i].votesAgainst)))
             ));
         }
     }
