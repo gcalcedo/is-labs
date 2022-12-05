@@ -3,6 +3,7 @@
 pragma solidity >=0.8.12 <0.9.0;
 
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract ShareholderVoting {
     address private director;
@@ -25,12 +26,20 @@ contract ShareholderVoting {
     }
 
     modifier onlyDirector() {
-        require(msg.sender == director);
+        require(msg.sender == director, "Only the director can perform this action.");
         _;
     }
 
     modifier onlyShareholder() {
-        require(shareholders[msg.sender]);
+        require(shareholders[msg.sender], "Only shareholders can perform this action.");
+        _;
+    }
+
+    modifier directorOrShareholder() {
+        require(
+            msg.sender == director || shareholders[msg.sender],
+            "Only the director or shareholders can perform this action."
+        );
         _;
     }
 
@@ -57,7 +66,7 @@ contract ShareholderVoting {
     }
 
     function voteForQuestion(uint id, Vote vote) public onlyShareholder {
-        require(!questions[id].closed);
+        require(!questions[id].closed, "This question is already closed.");
         require(!voters[id][msg.sender]);
 
         voters[id][msg.sender] = true;
@@ -69,13 +78,25 @@ contract ShareholderVoting {
         }
     }
 
-    function getQuestions() public view onlyShareholder {
+    function getQuestion(uint id) public view directorOrShareholder returns (string memory) {
+        require(id < questionCount, "ID is invalid.");
+
+        return string.concat(
+            Strings.toString(id),
+            " - ",
+            questions[id].text,
+            questions[id].closed ? " (Closed)" : " (Open)",
+            questions[id].closed
+                ? (questions[id].votesFor > questions[id].votesAgainst ? ": Approved" : ": Declined")
+                : "",
+            " - Votes For: ", Strings.toString(questions[id].votesFor), 
+            " | Against: ", Strings.toString(questions[id].votesAgainst)
+        );
+    }
+
+    function showQuestions() public view directorOrShareholder {
         for (uint i = 0; i < questionCount; i++) {
-            console.log(string.concat(
-                questions[i].text, 
-                questions[i].closed ? " (Closed)" : " (Open)",
-                questions[i].votesFor > questions[i].votesAgainst ? ": Approved" : ": Declined"
-            ));
+            console.log(getQuestion(i));
         }
     }
 }
