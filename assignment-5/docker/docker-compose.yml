@@ -1,0 +1,12 @@
+version: '3'
+services:
+  gis_lecture:
+    build:
+      context: ..
+      dockerfile: ./docker/DockerFile
+    ports:
+      - "8888:8888"
+    volumes:
+      - ..:/usr/src/
+
+

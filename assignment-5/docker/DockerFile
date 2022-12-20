@@ -1,0 +1,11 @@
+FROM python:3.10-bullseye
+WORKDIR /usr/src/
+COPY code/requirements.txt requirements.txt
+RUN apt-get update
+RUN apt-get install -y libgdal-dev
+RUN apt-get install -y python3-tk
+RUN apt-get install -y libfreetype-dev 
+RUN pip install -r ./requirements.txt
+
+CMD ["bash"]
+
