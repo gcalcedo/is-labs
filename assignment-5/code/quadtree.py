@@ -49,9 +49,34 @@ class QuadTree:
 		:param bbox: the initial BoundingBox
 		:param depth: the depth of the QuadTree
 
-		:To be implemented by the student:		
+		:To be implemented by the student:
 		"""
-		raise Exception('Quadtree::recurse should be implemented by the student')
+		if depth >= self.depth:
+			return
+
+		centroid = bbox.centroid()
+		halfwidth = bbox.width() / 2
+		halfheight = bbox.height() / 2
+
+		bounding_boxes = [
+			bb.BoundingBox( # lower left
+				centroid[0] - halfwidth, centroid[0],
+				centroid[1] - halfheight, centroid[1]),
+			bb.BoundingBox( # top left
+				centroid[0] - halfwidth, centroid[0],
+				centroid[1], centroid[1] + halfheight),
+			bb.BoundingBox( # lower right
+				centroid[0], centroid[0] + halfwidth,
+				centroid[1] - halfheight, centroid[1]),
+			bb.BoundingBox( # top right
+				centroid[0], centroid[0] + halfwidth,
+				centroid[1], centroid[1] + halfheight),
+		]
+		
+		self.quads[depth].extend(bounding_boxes)
+
+		for bounding_box in bounding_boxes:
+			self.recurse(bounding_box, depth + 1)
 
 	@staticmethod	
 	def at_least(size):
@@ -64,7 +89,7 @@ class QuadTree:
 
 		:Example:
 		>>> print(QuadTree.at_least(900))
-		>>> 1024	
+		>>> 1024
 		"""
 		return 4**int(math.ceil(math.log(size,4)))
 
