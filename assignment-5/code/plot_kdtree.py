@@ -59,19 +59,19 @@ if __name__ == '__main__':
 	if args.closest:
 		# This is for testing, to check if your closest query is correclty implemented
 
-		# Step 1 query and fetch		
+		# Step 1 query and fetch
 		closest_query = np.fromstring(args.closest,dtype=float, sep=' ')
 		closest_records = dtb.query(tree.closest(closest_query))
 
-		# Step 2 compare found geometry with closest_point	
+		# Step 2 compare found geometry with closest_point
 		geometries= [ [x[field_idx["x"]],x[field_idx["y"]] ] for x in closest_records]
 		distances = [np.linalg.norm(closest_query - geom) for geom in geometries]
 		ordered = np.argsort(distances)
-		
-		# Step 3 plot search and result point
-		plotter.add_closest_query(closest_query,geometries[ordered[0]])		
 
-	# Using the QuadTree depth to subsample the KDTree		
+		# Step 3 plot search and result point
+		plotter.add_closest_query(closest_query,geometries[ordered[0]])
+
+	# Using the QuadTree depth to subsample the KDTree
 	if args.quadtree:
 	# :To be implemented by the student:
 		raise Exception('plot_kdtree:: `# Using the QuadTree depth to subsample the KDTree` should be implemented by the student')	

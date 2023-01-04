@@ -130,7 +130,6 @@ class QuadTree:
 		return self.quads
 
 if __name__ == '__main__':
-
 	bbox = bb.BoundingBox(2,9,1,7)
 	print(QuadTree.at_least(900))
 	print(QuadTree.at_most(900))

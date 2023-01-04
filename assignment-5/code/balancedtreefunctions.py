@@ -16,9 +16,3 @@ class BalancedTreeFunctions:
 			depth += 1
 
 		return depth
-
-			
-
-
-		
-		

@@ -181,7 +181,7 @@ class BoundingBox:
 		>>> print(BoundingBox.from_dataset(data))
 		<<< [[ 0.  2.]
  			 [ 1.  4.]]
-		""" 				
+		"""
 		minx = np.min(data[:,xindex],axis=0)
 		maxx = np.max(data[:,xindex],axis=0)
 		miny = np.min(data[:,yindex],axis=0)
