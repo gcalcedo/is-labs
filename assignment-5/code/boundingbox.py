@@ -208,7 +208,3 @@ if __name__ == '__main__':
 	data = np.array([[0, 1],[0.5,3],[ 2, 4]])
 	print(data)
 	print(BoundingBox.from_dataset(data,0,1))
-	
-
-
-

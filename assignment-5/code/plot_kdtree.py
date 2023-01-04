@@ -18,7 +18,6 @@ from matplotlib.collections import PatchCollection
 
 
 if __name__ == '__main__':
-	
 	parser = argparse.ArgumentParser(description = 'KDTree plotting program.')
 
 	parser.add_argument('--filename', help='file containing spatial information.',type=str)
@@ -31,11 +30,9 @@ if __name__ == '__main__':
 	parser.add_argument('--quadtree', help='add quadtree indexing depth, 2',type=int)
 	parser.add_argument('--quadlevel', help='select all points up to this level, 2',type=int)
 	parser.add_argument('--quadshow', help='display the quadtree',type=bool,default=False)
-	
 
 	args = parser.parse_args()
 
-	
 	# Construct database	
 	fields = ["x","y"]
 	if args.quadtree:
@@ -51,7 +48,6 @@ if __name__ == '__main__':
 	tree = kd.KDTree(dtb, {'max-depth' : args.max_depth, 'max-elements' : args.max_elements})
 
 	plotter = pl.Plotter(tree,dtb,args)
-
 
 	# Testing: Implementing the QuadTree
 	if args.quadtree:
@@ -75,17 +71,9 @@ if __name__ == '__main__':
 		# Step 3 plot search and result point
 		plotter.add_closest_query(closest_query,geometries[ordered[0]])		
 
-	
 	# Using the QuadTree depth to subsample the KDTree		
 	if args.quadtree:
 	# :To be implemented by the student:
 		raise Exception('plot_kdtree:: `# Using the QuadTree depth to subsample the KDTree` should be implemented by the student')	
 
 	plotter.plot()
-
-	
-
-
-
-
-

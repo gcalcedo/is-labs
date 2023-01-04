@@ -8,5 +8,3 @@ services:
       - "8888:8888"
     volumes:
       - ..:/usr/src/
-
-
