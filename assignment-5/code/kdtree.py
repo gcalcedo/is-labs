@@ -58,12 +58,12 @@ class KDTree:
 			self.max_depth = options["max-depth"]
 		else:
 			self.max_depth = treef.tree_depth(len(data))
-		
+
 		if "max-elements" in options:
 			max_elem_depth = treef.tree_depth_max_leave_elements(len(data),options["max-elements"])
 			if self.max_depth < max_elem_depth:
 				self.max_depth = max_elem_depth
-			
+
 		self.partition = lambda x, index: np.argsort(x[:,index],axis=0)
 
 		storage_size = int(math.pow(2,self.max_depth)-1)
@@ -73,11 +73,11 @@ class KDTree:
 		self.traverse(data)
 
 		self.bb = bb.BoundingBox.from_dataset(data,db.fields()["x"],db.fields()["y"])				  
-	
+
 	def bounding_box(self):
 		"""
 		Returns the Minimum BoundingBox (MBR) of the KDTree
-		
+
 		:Example:
 		>>> print(tree.bounding_box())
 		<<< [[ 2.  9.]
@@ -97,17 +97,17 @@ class KDTree:
 		but is done repeatedly for clarity.
 		"""
 		axis = depth % 2		
-        
+
 		self.storage[sidx.storage()]["index"] = sidx.tree()
 		self.storage[sidx.storage()]["depth"] = depth
-		self.storage[sidx.storage()]["axis"] = axis		
-    	
+		self.storage[sidx.storage()]["axis"] = axis
+
 		# if no more splitting, store ids from the matrix
 		if len(mtrx) == 1 or depth + 1 == self.max_depth:
 			self.storage[sidx.storage()]["elements"] = mtrx[:,0]
 		else:
 			# order the matrix, and partition
-			order = np.array_split(self.partition(mtrx,axis + 1),2)			
+			order = np.array_split(self.partition(mtrx,axis + 1),2)
 			self.storage[sidx.storage()]["partition"] = mtrx[order[0][-1],axis + 1]
 			self.traverse(mtrx[order[0],:], depth + 1, sidx.left())
 			self.traverse(mtrx[order[1],:], depth + 1, sidx.right())
@@ -145,10 +145,10 @@ class KDTree:
 		"""
 		if depth not in bboxes:
 			bboxes[depth] = []
-			
+
 		bboxes[depth].append(box)
 
-		if "index" in self.storage[sidx.storage()]:			
+		if "index" in self.storage[sidx.storage()]:
 			axis = depth % 2
 
 			# there was further partitioning
@@ -156,26 +156,26 @@ class KDTree:
 				
 				left_box = box.reduce_max(axis,self.storage[sidx.storage()]["partition"])
 				right_box = box.reduce_min(axis,self.storage[sidx.storage()]["partition"])
-			
+
 				self.traverse_partition(depth + 1, sidx.left(), bboxes, left_box)
 				self.traverse_partition(depth + 1, sidx.right(), bboxes, right_box)
 
-			else:		
+			else:
 				return
-	
+
 	def rquery(self,bbox = [], sidx = si.StorageIndex()):
 		"""
 		Returns a list of unique keys that fell within the provided BoundingBox.
 		
 		:param bbox: the current BoundingBox that will be searched
 		:param sidx: helper class for Binary Tree traversal
-		
+
 		>>> bbox = bb.BoundingBox(1,2,1,2)
-		>>>	print(tree.rquery(bbox))		
+		>>> print(tree.rquery(bbox))
 		<<< [1, 2]
-		
+
 		>>> print(database.query(tree.rquery(bbox)))
-		<<< [[1, 2, 3], [2, 5, 4]]		
+		<<< [[1, 2, 3], [2, 5, 4]]
 		"""
 		if "elements" in self.storage[sidx.storage()]:
 			return self.storage[sidx.storage()]["elements"]
@@ -192,25 +192,33 @@ class KDTree:
 				boxes.extend(self.rquery(bbox,sidx.right()))
 
 		return boxes
-		
+
 	def closest(self, point, sidx = si.StorageIndex()):
 		"""
 		Returns a list of unique keys that fell within the BoundingBox that 
 		contained the point.
-		
+
 		:param point: the point of interest
-		
-		>>> print(tree.closest([7,2]))	
-		<<< [5 6]	
 
-		:To be implemented by the student:	
+		>>> print(tree.closest([7,2]))
+		<<< [5 6]
+
+		:To be implemented by the student:
 		"""
-		raise Exception('KDTree::closest should be implemented by the student')					
-		
+		if "elements" in self.storage[sidx.storage()]:
+			return self.storage[sidx.storage()]["elements"]
 
-	
+		else:
+			axis = self.storage[sidx.storage()]["axis"]
+			partition = self.storage[sidx.storage()]["partition"]
+
+			if point[axis] <= partition:
+				return self.closest(point, sidx.left())
+			else:
+				return self.closest(point, sidx.right())
+
+
 if __name__ == '__main__':
-		
 	data = [[2,3], [5,4], [9,6], [4,7], [8,1], [7,2]]
 	database = db.Database(["x","y"])
 	database.insert_iterable(data)
@@ -229,9 +237,3 @@ if __name__ == '__main__':
 	print (database.query(tree.rquery(bbox)))
 
 	print(tree.closest([7,2]))
-
-
-
-
-
-
