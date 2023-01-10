@@ -10,6 +10,7 @@ import matplotlib.animation as animation
 import matplotlib.patches as mpatches
 import matplotlib.colors as mcolors
 import numpy as np
+import math
 
 # lab
 import quadtree as qt
@@ -73,7 +74,20 @@ if __name__ == '__main__':
 
 	# Using the QuadTree depth to subsample the KDTree
 	if args.quadtree:
-	# :To be implemented by the student:
-		raise Exception('plot_kdtree:: `# Using the QuadTree depth to subsample the KDTree` should be implemented by the student')	
+		for key in dtb.keys():
+			dtb.update_field(key, "quad", args.quadlevel)
+
+		for level in range(args.quadtree - 1, -1, -1):
+			for bbox in quadtree.quads[level]:
+				centroid = bbox.centroid()
+				closest_records = dtb.query(tree.closest(centroid))
+				closest = min(
+					closest_records,
+					# We tried numpy methods, but this is faster
+					key=lambda record: math.sqrt(
+						(centroid[0] - record[field_idx["x"]])**2 + (centroid[1] - record[field_idx["y"]])**2
+					)
+				)
+				closest[field_idx["quad"]] = level
 
 	plotter.plot()
